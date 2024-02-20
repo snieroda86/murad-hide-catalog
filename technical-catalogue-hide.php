@@ -35,6 +35,10 @@ if( !class_exists( 'MoradHideCatalogue' )){
             // Registration form shortcode
             require_once(MORAD_PATH.'shortcodes/registration-form.php');
             $registration_form_shortcode = new Morad_Registration_Form_Shortcode();
+
+            // Custom template
+            require_once(MORAD_PATH.'includes/morad-custom-templates.php');
+            $morad_custom_templates = new Morad_Custom_Templates();
             // Enqueue scripts
             // add_action('wp_enqueue_scripts' , array($this , 'register_scripts') , 999);
                         
