@@ -32,6 +32,9 @@ if( !class_exists( 'MoradHideCatalogue' )){
             // Button to download catalogue shortcode
             require_once(MORAD_PATH.'shortcodes/catalogue-button.php');
             $catalogue_button_shortcode = new Morad_Catalogue_Button_Shortcode();
+            // Registration form shortcode
+            require_once(MORAD_PATH.'shortcodes/registration-form.php');
+            $registration_form_shortcode = new Morad_Registration_Form_Shortcode();
             // Enqueue scripts
             // add_action('wp_enqueue_scripts' , array($this , 'register_scripts') , 999);
                         
@@ -85,6 +88,6 @@ if (class_exists( 'MoradHideCatalogue' )){
     register_uninstall_hook( __FILE__, array( 'MoradHideCatalogue', 'uninstall' ) );
 
     // Instatiate the plugin class
-    $sn_song_translations = new MoradHideCatalogue(); 
+    $morad_hide_catalogue = new MoradHideCatalogue(); 
 }
 
