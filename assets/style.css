@@ -1,0 +1,10 @@
+#morad_registration_form fieldset label{
+	display: inline-block;
+	min-width: 170px !important;
+}
+
+.morad_errors{
+	background: #fec526;
+	padding: 15px;
+	margin:  10px 0;
+}

@@ -55,7 +55,19 @@ if(!class_exists('SystemyAluminiowe_CPT')){
 			global $post;
 		    if ( $post->post_type == 'systemy-aluminiowe' ) {
 		        if ( !is_user_logged_in() ) {
-		            $content = 'Please login to view this post';
+		            $registration_form_url = get_permalink(10471);
+		        	$content = '
+					    <a class="elementor-button elementor-button-link elementor-size-sm" href="'.$registration_form_url.'" >
+					        <span class="elementor-button-content-wrapper">
+					            <span class="elementor-button-icon elementor-align-icon-left">
+					                <i aria-hidden="true" class="fas fa-shopping-cart"></i>            
+					            </span>
+					            <span class="elementor-button-text">Załóż konto i uzyskaj dostęp</span>
+					        </span>
+					    </a>
+					';
+
+
 		        }
 		    }
 		    return $content;

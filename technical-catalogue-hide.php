@@ -40,7 +40,7 @@ if( !class_exists( 'MoradHideCatalogue' )){
             require_once(MORAD_PATH.'includes/morad-custom-templates.php');
             $morad_custom_templates = new Morad_Custom_Templates();
             // Enqueue scripts
-            // add_action('wp_enqueue_scripts' , array($this , 'register_scripts') , 999);
+            add_action('wp_enqueue_scripts' , array($this , 'register_scripts') , 999);
                         
         }
 
@@ -75,10 +75,11 @@ if( !class_exists( 'MoradHideCatalogue' )){
         }
 
         // Register scripts
-        // public function register_scripts(){
-        //     wp_register_script('custom-sn-js' , SN_SONG_TRS_URL.'assets/jquery.custom.js' , array('jquery') , SN_SONG_TRS_VERSION , true  );
-        //     wp_register_script('jquery-validate-sn-js' , SN_SONG_TRS_URL.'assets/jquery.validate.min.js' , array('jquery') , SN_SONG_TRS_VERSION , true  );
-        // } 
+        public function register_scripts(){
+            wp_register_script('morad-webpro14-js' , MORAD_URL.'assets/main.js' , array('jquery') , MORAD_VERSION , true  );
+            wp_register_style('morad-webpro14-css', MORAD_URL.'assets/style.css' , array(), MORAD_VERSION, 'all');
+
+        } 
 
     }
 }

@@ -14,6 +14,10 @@ if(!class_exists('Morad_Registration_Form_Shortcode')){
 
 			add_action('personal_options_update', array( $this , 'save_custom_user_profile_fields' ) );
 			add_action('edit_user_profile_update',  array( $this , 'save_custom_user_profile_fields' ) );
+
+			add_filter( 'manage_users_columns',  array( $this , 'add_newsletter_column_to_table' ) );
+
+			add_filter('manage_users_custom_column', array( $this , 'add_newsletter_value_to_column' ) , 10, 3 );
 		}
 
 		public function custom_register_form_shortcode(){
@@ -42,8 +46,12 @@ if(!class_exists('Morad_Registration_Form_Shortcode')){
 		*/
 
 		public function morad_registration_form_fields(){
+			wp_enqueue_script('morad-webpro14-js');
+			wp_enqueue_style('morad-webpro14-css');
+			$login_url = wp_login_url();
+
 			ob_start(); ?>	
-			<h3 class="morad_header"><?php _e('Register New Account'); ?></h3>
+			<h3 class="morad_header"><?php _e('Zarejestruj się'); ?> lub <a href="<?php echo $login_url ?>"><u>zaloguj</u></a></h3>
 	 
 			<?php 
 			// show any error messages after form submission
@@ -51,33 +59,143 @@ if(!class_exists('Morad_Registration_Form_Shortcode')){
 	 
 			<form id="morad_registration_form" class="morad_form" action="" method="POST">
 				<fieldset>
+					<h5><?php _e('Wybór grupy docelowej'); ?></h5>
 					<p>
-						<label for="morad_user_Login"><?php _e('Username'); ?></label>
-						<input name="morad_user_login" id="morad_user_login" class="required" type="text"/>
+						
+						<div>
+							<label  style="display: block;">
+								<input type="radio" value="Odbiorcy systemów budowlanych" name="client_role" checked>
+								Odbiorcy systemów budowlanych
+							</label>
+
+							<label  style="display: block;">
+								<input type="radio" value="Montażyści" name="client_role">
+								Montażyści
+							</label>
+
+							<label  style="display: block;">
+								<input type="radio" value="Architekci" name="client_role">
+								Architekci
+							</label>
+
+							<label  style="display: block;">
+								<input type="radio" value="Inne" name="client_role">
+								Inne
+							</label>
+							
+						</div>
 					</p>
+
+					<h5><?php _e('Dane użytkownika'); ?></h5>
+					<p>
+						<label for="morad_user_first"><?php _e('Imię'); ?></label>
+						<input name="morad_user_first" id="morad_user_first" required type="text"/>
+					</p>
+					<p>
+						<label for="morad_user_last"><?php _e('Nazwisko'); ?></label>
+						<input name="morad_user_last" id="morad_user_last" required type="text"/>
+					</p>
+
+					<p>
+						<label for="morad_user_login"><?php _e('Nazwa użytkownika'); ?></label>
+						<input name="morad_user_login" id="morad_user_login" class="required" required type="text"/>
+					</p>
+
+					<p>
+						<label for="morad_user_company"><?php _e('Nazwa firmy'); ?></label>
+						<input name="morad_user_company" id="morad_user_company" class="required" required type="text"/>
+					</p>
+
+					<p>
+						<label for="morad_user_nip"><?php _e('NIP'); ?></label>
+						<input name="morad_user_nip" id="morad_user_nip" class="required" required minlength="10" maxlength="10" type="text"/>
+					</p>
+					
 					<p>
 						<label for="morad_user_email"><?php _e('Email'); ?></label>
-						<input name="morad_user_email" id="morad_user_email" class="required" type="email"/>
+						<input name="morad_user_email" id="morad_user_email" class="required" required type="email"/>
+					</p>
+					
+					
+					<p>
+						<label for="morad_user_pass"><?php _e('Hasło'); ?></label>
+						<input name="morad_user_pass" id="morad_user_pass" class="required" required type="password"/>
 					</p>
 					<p>
-						<label for="morad_user_first"><?php _e('First Name'); ?></label>
-						<input name="morad_user_first" id="morad_user_first" type="text"/>
+						<label for="password_again"><?php _e('Powtórz hasło'); ?></label>
+						<input name="morad_user_pass_confirm" id="password_again" class="required" required type="password"/>
+					</p>
+
+					<h5><?php _e('Dane teleadresowe'); ?></h5>
+
+					<p>
+						<label for="morad_user_postcode"><?php _e('Kod pocztowy'); ?></label>
+						<input name="morad_user_postcode" id="morad_user_postcode" class="required" required type="text"/>
 					</p>
 					<p>
-						<label for="morad_user_last"><?php _e('Last Name'); ?></label>
-						<input name="morad_user_last" id="morad_user_last" type="text"/>
+						<label for="morad_user_city"><?php _e('Miasto'); ?></label>
+						<input name="morad_user_city" id="morad_user_city" class="required" required type="text"/>
 					</p>
 					<p>
-						<label for="password"><?php _e('Password'); ?></label>
-						<input name="morad_user_pass" id="password" class="required" type="password"/>
+						<label for="morad_user_street"><?php _e('Ulica'); ?></label>
+						<input name="morad_user_street" id="morad_user_street" class="required" required type="text"/>
 					</p>
 					<p>
-						<label for="password_again"><?php _e('Password Again'); ?></label>
-						<input name="morad_user_pass_confirm" id="password_again" class="required" type="password"/>
+						<label for="wojewodztwo">Województwo</label>
+						<select id="wojewodztwo" name="morad_user_voivodeship" required>
+						    <option value="" disabled selected>-- wybierz --</option>
+						    <option value="dolnoslaskie">Dolnośląskie</option>
+						    <option value="kujawsko-pomorskie">Kujawsko-Pomorskie</option>
+						    <option value="lubelskie">Lubelskie</option>
+						    <option value="lubuskie">Lubuskie</option>
+						    <option value="lodzkie">Łódzkie</option>
+						    <option value="malopolskie">Małopolskie</option>
+						    <option value="mazowieckie">Mazowieckie</option>
+						    <option value="opolskie">Opolskie</option>
+						    <option value="podkarpackie">Podkarpackie</option>
+						    <option value="podlaskie">Podlaskie</option>
+						    <option value="pomorskie">Pomorskie</option>
+						    <option value="slaskie">Śląskie</option>
+						    <option value="swietokrzyskie">Świętokrzyskie</option>
+						    <option value="warminsko-mazurskie">Warmińsko-Mazurskie</option>
+						    <option value="wielkopolskie">Wielkopolskie</option>
+						    <option value="zachodniopomorskie">Zachodniopomorskie</option>
+						</select>
 					</p>
+
+					<p>
+						<label for="morad_user_phone"><?php _e('Telefon'); ?></label>
+						<input name="morad_user_phone" id="morad_user_phone" class="required" required type="tel"/>
+					</p>
+
+
+					<h5><?php _e('Wyrażanie zgody'); ?></h5>
+
+					<p>
+						<label><input type="checkbox"  class="consent-field-sn" id="register-check-all">
+						Zaznacz wszystkie</label>
+					</p>
+
+					<p>
+						<label><input type="checkbox" class="consent-field-sn"  required>
+						Akceptuję <a terget="_blank" href="<?php echo site_url()?>/regulamin">regulamin</a></label>
+					</p>
+
+					<p>
+						<label><input type="checkbox" class="consent-field-sn"  required>
+						Zapoznałem się z informacją o przetwarzaniu danych</label>
+					</p>
+
+					<p>
+						<label><input type="checkbox" class="consent-field-sn"  name="morad_user_newsletter">
+						Chcę otrzymywać newslettery informacyjne Morad. Rekomendowane przez MORAD dla użytkowników strefy autoryzowanej.</label>
+					</p>
+
+
+
 					<p>
 						<input type="hidden" name="morad_register_nonce" value="<?php echo wp_create_nonce('morad-register-nonce'); ?>"/>
-						<input type="submit" value="<?php _e('Register Your Account'); ?>"/>
+						<input type="submit" value="<?php _e('Zarejestruj się'); ?>"/>
 					</p>
 				</fieldset>
 			</form>
@@ -94,7 +212,7 @@ if(!class_exists('Morad_Registration_Form_Shortcode')){
 				    // Loop error codes and display errors
 				   foreach($codes as $code){
 				        $message = $this->morad_errors()->get_error_message($code);
-				        echo '<span class="error"><strong>' . __('Error') . '</strong>: ' . $message . '</span><br/>';
+				        echo '<span class="error"><strong>' . __('Błąd')  . '</strong>: ' . $message . '</span><br/>';
 				    }
 				echo '</div>';
 			}	
@@ -115,43 +233,114 @@ if(!class_exists('Morad_Registration_Form_Shortcode')){
 		public function save_new_user(){
 
 			if (isset( $_POST["morad_user_login"] ) && wp_verify_nonce($_POST['morad_register_nonce'], 'morad-register-nonce')) {
-			      $user_login		= $_POST["morad_user_login"];	
-			      $user_email		= $_POST["morad_user_email"];
-			      $user_first 	    = $_POST["morad_user_first"];
-			      $user_last	 	= $_POST["morad_user_last"];
-			      $user_pass		= $_POST["morad_user_pass"];
-			      $pass_confirm 	= $_POST["morad_user_pass_confirm"];
+			     
+
+					$client_role = $_POST['client_role'];
+				    $morad_user_first = $_POST['morad_user_first'];
+				    $morad_user_last = $_POST['morad_user_last'];
+				    $morad_user_login = $_POST['morad_user_login'];
+				    $morad_user_company = $_POST['morad_user_company'];
+				    $morad_user_nip = $_POST['morad_user_nip'];
+				    $morad_user_email = $_POST['morad_user_email'];
+				    $morad_user_pass = $_POST['morad_user_pass'];
+				    $morad_user_pass_confirm 	= $_POST["morad_user_pass_confirm"];
+				    $morad_user_postcode = $_POST['morad_user_postcode'];
+				    $morad_user_city = $_POST['morad_user_city'];
+				    $morad_user_street = $_POST['morad_user_street'];
+				    $morad_user_voivodeship = $_POST['morad_user_voivodeship'];
+				    $morad_user_phone = $_POST['morad_user_phone'];
+				    $morad_user_newsletter = isset($_POST['morad_user_newsletter']) ? 1 : 0;
+
+
+
+
 			      
 			      // this is required for username checks
 			      // require_once(ABSPATH . WPINC . '/registration.php');
+
+
+				  if($client_role == '') {
+			          
+			          $this->morad_errors()->add('password_client_role', __('Wybierz rolę'));
+			      }
+
+			      if($morad_user_first == '') {
+			          
+			          $this->morad_errors()->add('morad_user_first_empty', __('Wpisz imię'));
+			      }
+
+			      if($morad_user_last == '') {
+			          
+			          $this->morad_errors()->add('morad_user_last_empty', __('Wpisz nazwisko'));
+			      }
+
+			      if($morad_user_company == '') {
+			          
+			          $this->morad_errors()->add('morad_user_company_empty', __('Wpisz nazwę firmy'));
+			      }
+
+			      if($morad_user_nip == '') {
+			          
+			          $this->morad_errors()->add('morad_user_nip_empty', __('Wpisz numer NIP'));
+			      }
+
+			      if($morad_user_postcode == '') {
+			          
+			          $this->morad_errors()->add('morad_user_postcode_empty', __('Wpisz kod pocztowy'));
+			      }
+
+			      if($morad_user_city == '') {
+			          
+			          $this->morad_errors()->add('morad_user_city_empty', __('Wpisz miasto'));
+			      }
+
+			      if($morad_user_street == '') {
+			          
+			          $this->morad_errors()->add('morad_user_street_empty', __('Wpisz ulicę'));
+			      }
+
+			       if($morad_user_voivodeship == '') {
+			          
+			          $this->morad_errors()->add('morad_user_voivodeship_empty', __('Wybierz województwo'));
+			      }
+
+			       if($morad_user_phone == '') {
+			          
+			          $this->morad_errors()->add('morad_user_phone_empty', __('Wpisz numer telefonu'));
+			      }
+
+
+
+
+
 			      
-			      if(username_exists($user_login)) {
+			      if(username_exists($morad_user_login)) {
 			          // Username already registered
-			          $this->morad_errors()->add('username_unavailable', __('Username already taken'));
+			          $this->morad_errors()->add('username_unavailable', __('Taki użytkownik już istnieje'));
 			      }
-			      if(!validate_username($user_login)) {
+			      if(!validate_username($morad_user_login)) {
 			          // invalid username
-			          $this->morad_errors()->add('username_invalid', __('Invalid username'));
+			          $this->morad_errors()->add('username_invalid', __('Niepoprawna nazwa użytkownika'));
 			      }
-			      if($user_login == '') {
+			      if($morad_user_login == '') {
 			          // empty username
-			          $this->morad_errors()->add('username_empty', __('Please enter a username'));
+			          $this->morad_errors()->add('username_empty', __('Wpisz nazwę użytkownika'));
 			      }
-			      if(!is_email($user_email)) {
+			      if(!is_email($morad_user_email)) {
 			          //invalid email
-			          $this->morad_errors()->add('email_invalid', __('Invalid email'));
+			          $this->morad_errors()->add('email_invalid', __('Niepoprawny email'));
 			      }
-			      if(email_exists($user_email)) {
+			      if(email_exists($morad_user_email)) {
 			          //Email address already registered
-			          $this->morad_errors()->add('email_used', __('Email already registered'));
+			          $this->morad_errors()->add('email_used', __('Email już istnieje'));
 			      }
-			      if($user_pass == '') {
+			      if($morad_user_pass == '') {
 			          // passwords do not match
-			          $this->morad_errors()->add('password_empty', __('Please enter a password'));
+			          $this->morad_errors()->add('password_empty', __('Wpisz hasło'));
 			      }
-			      if($user_pass != $pass_confirm) {
+			      if($morad_user_pass != $morad_user_pass_confirm) {
 			          // passwords do not match
-			          $this->morad_errors()->add('password_mismatch', __('Passwords do not match'));
+			          $this->morad_errors()->add('password_mismatch', __('Hasła różnią się'));
 			      }
 			      
 			      $errors = $this->morad_errors()->get_error_messages();
@@ -161,24 +350,25 @@ if(!class_exists('Morad_Registration_Form_Shortcode')){
 			          
 			          $new_user_id = wp_insert_user(
 			          		array(
-			                  'user_login'		=> $user_login,
-			                  'user_pass'	 		=> $user_pass,
-			                  'user_email'		=> $user_email,
-			                  'first_name'		=> $user_first,
-			                  'last_name'			=> $user_last,
+			                  'user_login'		=> $morad_user_login,
+			                  'user_pass'	 		=> $morad_user_pass,
+			                  'user_email'		=> $morad_user_email,
+			                  'first_name'		=> $morad_user_first,
+			                  'last_name'			=> $morad_user_last,
 			                  'user_registered'	=> date('Y-m-d H:i:s'),
 			                  'role'				=> 'subscriber',
 			                  'show_admin_bar_front' => 'false' ,
 			                  'meta_input'      => array(
-			                  	'client_role' => 'Odbiorcy systemów budowlanych' ,
-			                  	'client_company_name' => 'WITMAR S.C.' ,
-			                  	'client_nip'  => 53535353536 ,
-			                  	'client_post_code'  =>  '38-124' ,
-			                  	'client_city'     => 'Wańkowa' ,
-			                  	'client_street'   => 'Lisa-Kuli 2c' ,
-			                  	'client_voivodeship'   => 'podkarpackie' ,
-			                  	'client_phone'   => '345353534534' ,
-			                  	'client_newsletter'   => 0
+			                  	'client_role' => $client_role ,
+			                  	'client_company_name' => $morad_user_company ,
+			                  	'client_nip'  => $morad_user_nip ,
+			                  	'client_post_code'  =>  $morad_user_postcode ,
+			                  	'client_city'     => $morad_user_city ,
+			                  	'client_street'   => $morad_user_street ,
+			                  	'client_voivodeship'   => $morad_user_voivodeship ,
+			                  	'client_phone'   => $morad_user_phone ,
+			                  	'client_newsletter'   => $morad_user_newsletter ,
+			                  	'client_priviliges' => 'panel_allow_access'
 
 
 			                  )
@@ -189,12 +379,13 @@ if(!class_exists('Morad_Registration_Form_Shortcode')){
 			              wp_new_user_notification($new_user_id);
 			              
 			              // log the new user in
-			              wp_setcookie($user_login, $user_pass, true);
-			              wp_set_current_user($new_user_id, $user_login);	
-			              do_action('wp_login', $user_login);
+			              wp_setcookie($morad_user_login, $morad_user_pass, true);
+			              wp_set_current_user($new_user_id, $morad_user_login);	
+			              do_action('wp_login', $morad_user_login);
 			              
-			              // send the newly created user to the home page after logging them in
-			              wp_redirect(home_url()); exit;
+			              // send the newly created user to the download files panel
+			              $user_panel_url = get_permalink(10478);
+			              wp_redirect($user_panel_url); exit;
 			          }
 			          
 			      }
@@ -308,6 +499,34 @@ if(!class_exists('Morad_Registration_Form_Shortcode')){
 		            update_user_meta($user_id, $field, sanitize_text_field($_POST[$field]));
 		        }
 		    }
+		}
+
+
+		/*
+		** Add newstetter column to users table in admin panel
+		*/
+
+		public function add_newsletter_column_to_table( $column ){
+			$column['client_newsletter'] = 'Newsletter'; 
+   			return $column;
+		}
+
+
+		public function add_newsletter_value_to_column( $val, $column_name, $user_id ) {
+		  switch ($column_name) {
+		    case 'client_newsletter' :
+		     $newsletter_allow_number =  get_the_author_meta( 'client_newsletter', $user_id );
+		     $newsletter_allow = '';
+		     if($newsletter_allow_number == 1 ){
+		     	$newsletter_allow = 'TAK';
+		     }else{
+		     	$newsletter_allow = 'NIE';
+		     } 
+		     return $newsletter_allow;
+		     break;
+		    default:
+		  }
+		 return $val;
 		}
 
 

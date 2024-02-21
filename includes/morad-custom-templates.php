@@ -28,15 +28,12 @@ if(!class_exists('Morad_Custom_Templates')){
 		 *
 		 * @return mixed
 		 */
-		function change_page_template($template)
+		function change_page_template($template) 
 		{
 			
 			global $post;
 		    $custom_template_slug   = 'pliki-do-pobrania-panel.php';
 		    $page_template_slug     = get_page_template_slug( $post->ID );
-
-		    $path = '';
-		    // die(plugin_dir_path(__DIR__).'templates/'.$page_template_slug);
 
 		    if( $page_template_slug == $custom_template_slug ){
 		        $template = plugin_dir_path(__DIR__).'templates/'.$page_template_slug;

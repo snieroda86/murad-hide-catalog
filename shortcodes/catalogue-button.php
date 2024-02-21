@@ -29,7 +29,8 @@ if(!class_exists('Morad_Catalogue_Button_Shortcode')){
 					</span>
 				</a>
 	        <?php else : ?>
-	            <a class="elementor-button elementor-button-link elementor-size-sm elementor-animation-shrink" href="#">
+	        	<?php $registration_form_url = get_permalink(10471); ?>
+	            <a class="elementor-button elementor-button-link elementor-size-sm elementor-animation-shrink" href="<?php echo $registration_form_url ?>">
 					<span class="elementor-button-content-wrapper">
 						<span class="elementor-button-icon elementor-align-icon-left">
 								<i aria-hidden="true" class="fas fa-file-download"></i>			
